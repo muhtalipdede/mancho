@@ -1,4 +1,18 @@
+use crate::enums;
+
 use num_complex::Complex;
+use enums::filter_type::FilterType;
+
+pub fn process_samples(samples: Vec<f32>, filter_type: FilterType) -> Vec<f32> {
+    match filter_type {
+        FilterType::Trashold(value) => trashold(samples, value),
+        FilterType::Gaussian(sigma) => gaussian_filter(samples, sigma),
+        FilterType::Convolution(kernel) => convolution(samples, kernel),
+        FilterType::Echo(delay, decay) => echo(samples, delay, decay),
+        FilterType::Blur(radius) => blur(samples, radius),
+        FilterType::FFT => fft(samples),
+    }
+}
 
 pub fn trashold(samples: Vec<f32>, trashold: f32) -> Vec<f32> {
     let mut new_samples = samples.clone();
