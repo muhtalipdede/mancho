@@ -11,6 +11,9 @@ pub fn process_samples(samples: Vec<f32>, filter_type: FilterType) -> Vec<f32> {
         FilterType::Echo(delay, decay) => echo(samples, delay, decay),
         FilterType::Blur(radius) => blur(samples, radius),
         FilterType::FFT => fft(samples),
+        FilterType::Reverb(delay, decay) => reverb(samples, delay, decay),
+        FilterType::Distortion(gain) => distortion(samples, gain),
+        FilterType::None => samples,
     }
 }
 
@@ -115,6 +118,50 @@ pub fn fft(samples: Vec<f32>) -> Vec<f32> {
 
     for i in 0..samples.len() {
         new_samples[i] = complex_samples[i].re;
+    }
+
+    new_samples
+}
+
+pub fn reverb(samples: Vec<f32>, delay: usize, decay: f32) -> Vec<f32> {
+    let mut new_samples = samples.clone();
+    for i in 0..samples.len() {
+        if i >= delay {
+            new_samples[i] = samples[i] + samples[i - delay] * decay;
+        }
+    }
+
+    new_samples
+}
+
+pub fn distortion(samples: Vec<f32>, gain: f32) -> Vec<f32> {
+    let mut new_samples = samples.clone();
+    for i in 0..samples.len() {
+        new_samples[i] = samples[i] * gain;
+    }
+
+    new_samples
+}
+
+pub fn seperate_channels(samples: Vec<f32>, channels: usize) -> Vec<Vec<f32>> {
+    let mut new_samples = Vec::new();
+    for _ in 0..channels {
+        new_samples.push(Vec::new());
+    }
+
+    for i in 0..samples.len() {
+        new_samples[i % channels].push(samples[i]);
+    }
+
+    new_samples
+}
+
+pub fn combine_channels(samples: Vec<Vec<f32>>) -> Vec<f32> {
+    let mut new_samples = Vec::new();
+    for i in 0..samples[0].len() {
+        for j in 0..samples.len() {
+            new_samples.push(samples[j][i]);
+        }
     }
 
     new_samples

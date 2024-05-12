@@ -437,6 +437,7 @@ dependencies = [
  "hound",
  "image",
  "num-complex",
+ "rand",
  "rustfft",
 ]
 

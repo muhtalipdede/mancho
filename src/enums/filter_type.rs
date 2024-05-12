@@ -5,4 +5,7 @@ pub enum FilterType {
     Echo(usize, f32),
     Blur(usize),
     FFT,
+    Reverb(usize, f32),
+    Distortion(f32),
+    None,
 }
